@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI Tools Hub - 101+ Free AI-Powered Tools for Images, PDFs, SEO, and Writing">
+    <title>AI Tools Hub - 101+ Free AI Tools</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        accent: '#ec4899',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+        }
+        
+        .dark {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+        
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s;
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .tool-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .drop-zone {
+            border: 3px dashed #6366f1;
+            transition: all 0.3s;
+        }
+        
+        .drop-zone.drag-over {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: #ec4899;
+            transform: scale(1.02);
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            transform: translateX(400px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 9999;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .toast.success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .toast.error { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        
+        .category-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 0.625rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 4px 8px;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+        }
+        
+        .modal-enter {
+            animation: modalEnter 0.3s ease;
+        }
+        
+        @keyframes modalEnter {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .hidden { display: none !important; }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 4px; }
+    </style>
+</head>
+<body class="font-sans antialiased">
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass border-b border-gray-200 dark:border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="showHome()" role="button" tabindex="0">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
+                        <i class="fas fa-robot text-white text-xl"></i>
+                    </div>
+                    <div class="hidden sm:block">
+                        <span class="text-xl font-bold gradient-text">AI Tools Hub</span>
+                        <span class="block text-[10px] text-gray-500 dark:text-gray-400 -mt-1">101+ Free Tools</span>
+                    </div>
+                </div>
+
+                <!-- Search -->
+                <div class="flex-1 max-w-lg mx-4 hidden md:block">
+                    <div class="relative">
+                        <input type="text" 
+                               id="globalSearch" 
+                               placeholder="Search tools (Ctrl+K)..." 
+                               class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary"
+                               oninput="searchTools(this.value)">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <div id="searchDropdown" class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 hidden max-h-96 overflow-y-auto z-50"></div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center space-x-4">
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle dark mode">
+                        <i class="fas fa-moon dark:hidden text-gray-600"></i>
+                        <i class="fas fa-sun hidden dark:block text-yellow-400"></i>
+                    </button>
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                        <i class="fas fa-bars text-gray-600 dark:text-gray-300"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden glass border-t border-gray-200 dark:border-gray-800">
+            <div class="px-4 py-3 space-y-2">
+                <input type="text" placeholder="Search..." class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 mb-3" oninput="searchTools(this.value)">
+                <button onclick="showCategory('all')" class="block w-full text-left py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">All Tools</button>
+                <button onclick="showCategory('image')" class="block w-full text-left py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">Image Tools</button>
+                <button onclick="showCategory('pdf')" class="block w-full text-left py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">PDF Tools</button>
+                <button onclick="showCategory('seo')" class="block w-full text-left py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">SEO Tools</button>
+                <button onclick="showCategory('ai')" class="block w-full text-left py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">AI Writing</button>
+                <button onclick="showCategory('security')" class="block w-full text-left py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">Security</button>
+                <button onclick="showCategory('utility')" class="block w-full text-left py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">Utilities</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-16">
+        <!-- Hero -->
+        <section class="relative py-20 px-4 overflow-hidden">
+            <div class="absolute inset-0 pointer-events-none">
+                <div class="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl"></div>
+                <div class="absolute bottom-20 right-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl"></div>
+            </div>
+
+            <div class="max-w-7xl mx-auto text-center relative z-10">
+                <div class="inline-flex items-center px-4 py-2 rounded-full glass mb-6">
+                    <span class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                    <span class="text-sm font-medium">101+ Tools • Free Forever • No Sign-up</span>
+                </div>
+
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                    AI-Powered Tools for <br>
+                    <span class="gradient-text">Creators & Professionals</span>
+                </h1>
+
+                <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-10">
+                    Boost productivity with our comprehensive suite of AI tools. 
+                    From image editing to SEO optimization, all in one place.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                    <button onclick="scrollToTools()" class="btn-primary px-8 py-4 rounded-full font-semibold text-lg flex items-center justify-center gap-2">
+                        <i class="fas fa-rocket"></i> Start Free
+                    </button>
+                    <button onclick="showCategory('ai')" class="glass px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all border border-gray-300 dark:border-gray-700 flex items-center justify-center gap-2">
+                        <i class="fas fa-crown text-yellow-500"></i> Try AI Tools
+                    </button>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+                    <div class="glass rounded-2xl p-4 border border-gray-200 dark:border-gray-800">
+                        <div class="text-3xl font-bold text-primary">101+</div>
+                        <div class="text-sm text-gray-500">AI Tools</div>
+                    </div>
+                    <div class="glass rounded-2xl p-4 border border-gray-200 dark:border-gray-800">
+                        <div class="text-3xl font-bold text-secondary">50k+</div>
+                        <div class="text-sm text-gray-500">Daily Users</div>
+                    </div>
+                    <div class="glass rounded-2xl p-4 border border-gray-200 dark:border-gray-800">
+                        <div class="text-3xl font-bold text-accent">1M+</div>
+                        <div class="text-sm text-gray-500">Tasks Done</div>
+                    </div>
+                    <div class="glass rounded-2xl p-4 border border-gray-200 dark:border-gray-800">
+                        <div class="text-3xl font-bold text-green-500">99.9%</div>
+                        <div class="text-sm text-gray-500">Uptime</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category Filter -->
+        <section class="sticky top-16 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 py-4 px-4">
+            <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto scrollbar-hide">
+                <button onclick="showCategory('all')" class="category-pill active px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all bg-primary text-white" data-category="all">All Tools</button>
+                <button onclick="showCategory('image')" class="category-pill px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all glass border border-gray-300 dark:border-gray-700 hover:border-primary" data-category="image">🖼️ Image</button>
+                <button onclick="showCategory('pdf')" class="category-pill px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all glass border border-gray-300 dark:border-gray-700 hover:border-primary" data-category="pdf">📄 PDF</button>
+                <button onclick="showCategory('seo')" class="category-pill px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all glass border border-gray-300 dark:border-gray-700 hover:border-primary" data-category="seo">🔍 SEO</button>
+                <button onclick="showCategory('ai')" class="category-pill px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all glass border border-gray-300 dark:border-gray-700 hover:border-primary" data-category="ai">✍️ AI Writing</button>
+                <button onclick="showCategory('security')" class="category-pill px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all glass border border-gray-300 dark:border-gray-700 hover:border-primary" data-category="security">🔒 Security</button>
+                <button onclick="showCategory('utility')" class="category-pill px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all glass border border-gray-300 dark:border-gray-700 hover:border-primary" data-category="utility">🛠️ Utilities</button>
+            </div>
+        </section>
+
+        <!-- Tools Grid -->
+        <section id="toolsSection" class="py-12 px-4">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-3xl font-bold" id="categoryTitle">All AI Tools</h2>
+                    <span class="text-gray-500 text-sm" id="toolCount">Loading...</span>
+                </div>
+
+                <div id="toolsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Tools rendered by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Tools -->
+        <section class="py-16 px-4 glass border-y border-gray-200 dark:border-gray-800">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold text-center mb-12">Most Popular Tools</h2>
+                <div class="grid md:grid-cols-3 gap-8" id="featuredTools"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Tool Modal -->
+    <div id="toolModal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onclick="closeToolModal()"></div>
+        <div class="relative min-h-screen flex items-center justify-center p-4 pointer-events-none">
+            <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col modal-enter pointer-events-auto">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-800">
+                    <div class="flex items-center gap-3">
+                        <div id="modalIcon" class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                            <i class="fas fa-robot text-white"></i>
+                        </div>
+                        <div>
+                            <h3 id="modalTitle" class="text-xl font-bold">Tool Name</h3>
+                            <p id="modalDesc" class="text-sm text-gray-500 dark:text-gray-400">Description</p>
+                        </div>
+                    </div>
+                    <button onclick="closeToolModal()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Close modal">
+                        <i class="fas fa-times text-xl text-gray-500"></i>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div id="modalBody" class="flex-1 overflow-y-auto p-6">
+                    <!-- Tool interface injected here -->
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="p-4 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+                    <div class="flex items-center justify-between text-sm text-gray-500">
+                        <span>AI Tools Hub • Free Forever</span>
+                        <button onclick="showHelp()" class="text-primary hover:underline">Need Help?</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-800 py-12 px-4 bg-gray-50 dark:bg-gray-900/50">
+        <div class="max-w-7xl mx-auto text-center">
+            <div class="flex items-center justify-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                    <i class="fas fa-robot text-white text-sm"></i>
+                </div>
+                <span class="text-lg font-bold gradient-text">AI Tools Hub</span>
+            </div>
+            <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">101+ free AI-powered tools. No signup required.</p>
+            <div class="flex justify-center gap-4 mb-6">
+                <a href="#" class="w-8 h-8 rounded-full glass flex items-center justify-center hover:bg-primary hover:text-white transition-all"><i class="fab fa-twitter text-sm"></i></a>
+                <a href="#" class="w-8 h-8 rounded-full glass flex items-center justify-center hover:bg-primary hover:text-white transition-all"><i class="fab fa-github text-sm"></i></a>
+                <a href="#" class="w-8 h-8 rounded-full glass flex items-center justify-center hover:bg-primary hover:text-white transition-all"><i class="fab fa-discord text-sm"></i></a>
+            </div>
+            <p class="text-gray-400 text-xs">© 2024 AI Tools Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ==========================================
+        // COMPLETE TOOLS DATABASE (101 TOOLS)
+        // ==========================================
+        const toolsDatabase = [
+            // IMAGE TOOLS (21)
+            { id: 'image-compressor', name: 'Image Compressor', category: 'image', icon:
